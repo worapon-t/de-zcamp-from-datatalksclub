@@ -22,17 +22,21 @@ def main(params):
 
     os.system(f"wget {url} -O {csv_name}")
 
+    # DB Connection
     engine = create_engine(f'postgresql://{user}:{password}@{host}:{port}/{db}')
 
     df_iter = pd.read_csv(csv_name, iterator=True, chunksize=100000)
 
     df = next(df_iter)
 
-    df.tpep_pickup_datetime = pd.to_datetime(df.tpep_pickup_datetime)
-    df.tpep_dropoff_datetime = pd.to_datetime(df.tpep_dropoff_datetime)
+    if "yellow_tripdata" in url:
+        df.tpep_pickup_datetime = pd.to_datetime(df.tpep_pickup_datetime)
+        df.tpep_dropoff_datetime = pd.to_datetime(df.tpep_dropoff_datetime)
 
+    # Create table on PostgreSQL
     df.head(n=0).to_sql(name=table_name, con=engine, if_exists='replace')
 
+    # Load data to table
     df.to_sql(name=table_name, con=engine, if_exists='append')
 
 
@@ -41,8 +45,9 @@ def main(params):
 
         df = next(df_iter)
 
-        df.tpep_pickup_datetime = pd.to_datetime(df.tpep_pickup_datetime)
-        df.tpep_dropoff_datetime = pd.to_datetime(df.tpep_dropoff_datetime)
+        if "yellow_tripdata" in url:
+            df.tpep_pickup_datetime = pd.to_datetime(df.tpep_pickup_datetime)
+            df.tpep_dropoff_datetime = pd.to_datetime(df.tpep_dropoff_datetime)
 
         df.to_sql(name=table_name, con=engine, if_exists='append')
 

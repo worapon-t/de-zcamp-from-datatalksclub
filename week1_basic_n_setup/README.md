@@ -37,8 +37,25 @@
             ```
             jupyter nbconvert --to=script upload-data.ipynb
             ```
+            ```
+            docker build -t taxi_ingest:v001 .
+            ```
             
         - Use the docker compose for run PostgreSQL & pgAdmin
+            ```
+            docker-compose up -d
+            ```
+        - Load yellow_taxi_data and zone to PostgreSQL
+            Check your docker network first
+            ```
+            docker network ls
+            ```
+            ```
+            docker run -it --network={network} taxi_ingest:v001 --user=root --password=root --host=pgdatabase --port=5432 --db=ny_taxi --table_name=zone --url=https://s3.amazonaws.com/nyc-tlc/misc/taxi+_zone_lookup.csv
+            ```
+            ```
+            docker run -it --network={network} taxi_ingest:v001 --user=root --password=root --host=pgdatabase --port=5432 --db=ny_taxi --table_name=yellow_taxi_trips --url=https://s3.amazonaws.com/nyc-tlc/trip+data/yellow_tripdata_2021-01.csv
+            ```
     5. SQL refresher
 
 2. GCP & Terraform
