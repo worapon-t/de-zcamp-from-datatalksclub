@@ -130,3 +130,5 @@ dmypy.json
 
 # ignore data volumn
 ny_taxi_postgres_data/
+credentials/
+logs/
